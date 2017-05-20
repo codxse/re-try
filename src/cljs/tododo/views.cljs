@@ -12,7 +12,9 @@
     (fn []
       [ui/card
        {:expanded @exp
-        :initialy-expanded true}
+        :initialy-expanded true
+        :style {:width 300
+                :margin 25}}
        [ui/card-header
         {:title "Some title"
          :subtitle "subtitle"
@@ -26,6 +28,22 @@
        [ui/card-text {:expandable true}
         @leorm]])))
 
+(def styles {:root {:display "flex"
+                    :margin-top 25
+                    :flex-wrap "wrap"
+                    :justify-content "space-around"}
+             :grid-list {:display "flex"
+                         :flex-wrap "nowarp"
+                         :overflow-x "auto"}})
+
+(defn todo []
+  (fn []
+    [:div {:style (:root styles)}
+     [ui/grid-list {:style (:grid-list styles)
+                    :cols 2.2}
+      (repeat 5 [ui/grid-tile {:title "Some title"}
+                 [:img {:src "http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg"}]])]]))
+
 
 (defn main-panel []
   (let [name (f/subscribe [:name])
@@ -37,4 +55,6 @@
                      :icon-element-right
                             (r/as-element [ui/icon-button
                                            (ic/action-account-balance-wallet)])}]
-        [cardr]]])))
+        [cardr]
+        [cardr]
+        [todo]]])))
