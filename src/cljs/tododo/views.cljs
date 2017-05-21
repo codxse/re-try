@@ -50,8 +50,8 @@
      [ui/card-title {:title "+ Add new card!"
                      :on-click #(f/dispatch-sync [:test-click])}]]))
 
-(defn my-card [card]
-  (fn [{:keys [title editing id]}]
+(defn my-card [card idx-column idx-card]
+  (fn [{:keys [title editing id]} idx-column idx-card]
     (if editing
       [ui/card {:key id}
         [ui/text-field {:value title
@@ -67,8 +67,8 @@
       [ui/card-title {:title "+ Add new column"
                       :on-click #(f/dispatch-sync [:board/add-column!])}]]]))
 
-(defn my-column [column idx]
-  (fn [{:keys [title cards editing id]} idx]
+(defn my-column [column idx-column]
+  (fn [{:keys [title cards editing id]} idx-column]
     [:div.column {:key id}
      (if editing
        [ui/card
@@ -78,14 +78,13 @@
                         :underline-style {:display "none"}}]]
        [ui/card {:style {:background-color "#ddd"}}
         [ui/card-title {:title title}]])
-     (for [c cards]
-       [my-card c])
-     [my-new-card idx]]))
+     (map-indexed (fn [idx-card card] [my-card card idx-column idx-card]) cards)
+     [my-new-card idx-column]]))
 
 (defn main-panel []
   (let [name (f/subscribe [:name])
         title (f/subscribe [:title])
-        columns (f/subscribe [:board/columns])]
+        columns @(f/subscribe [:board/columns])]
     (fn []
       [ui/mui-theme-provider {:mui-theme (get-mui-theme {:palette {:text-color (color :green600)}})}
        [:div
@@ -94,7 +93,5 @@
                             (r/as-element [ui/icon-button
                                            (ic/action-account-balance-wallet)])}]
         [:div.board
-         ;(map-indexed my-column @(f/subscribe [:board/columns]))
-         (for [c @columns]
-           [my-column c (range)])
+         (map-indexed (fn [idx-column column] [my-column column idx-column]) columns)
          [my-new-column]]]])))
