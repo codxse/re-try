@@ -44,34 +44,35 @@
       (repeat 5 [ui/grid-tile {:title "Some title"}
                  [:img {:src "http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg"}]])]]))
 
-(defn my-new-card []
-  (fn []
+(defn my-new-card [idx]
+  (fn [idx]
     [ui/card
-     [ui/card-title {:title "+ Add new card!"}]]))
+     [ui/card-title {:title "+ Add new card!"
+                     :on-click #(f/dispatch-sync [:test-click])}]]))
 
 (defn my-card [card]
-  (fn [{:keys [title editing]}]
+  (fn [{:keys [title editing id]}]
     (if editing
-      [ui/card
-        [ui/text-field {:hint-text title
+      [ui/card {:key id}
+        [ui/text-field {:value title
                         :underline-style {:display "none"}
-                        ;;:style {:padding-left 15}
                         :input-style {:color "#ccc"}}]]
-      [ui/card
+      [ui/card {:key id}
        [ui/card-text title]])))
 
 (defn my-new-column []
   (fn []
     [:div.column
      [ui/card {:style {:background-color "#ddd"}}
-      [ui/card-title {:title "+ Add new column"}]]]))
+      [ui/card-title {:title "+ Add new column"
+                      :on-click #(f/dispatch-sync [:board/add-column!])}]]]))
 
-(defn my-column [column]
-  (fn [{:keys [title cards editing]}]
-    [:div.column
+(defn my-column [column idx]
+  (fn [{:keys [title cards editing id]} idx]
+    [:div.column {:key id}
      (if editing
        [ui/card
-        [ui/text-field {:hint-text title
+        [ui/text-field {:value title
                         :style {:padding-top 5
                                 :font-size 20}
                         :underline-style {:display "none"}}]]
@@ -79,11 +80,7 @@
         [ui/card-title {:title title}]])
      (for [c cards]
        [my-card c])
-     [my-new-card]]))
-
-(defn my-board []
-  [:div.board])
-
+     [my-new-card idx]]))
 
 (defn main-panel []
   (let [name (f/subscribe [:name])
@@ -97,7 +94,7 @@
                             (r/as-element [ui/icon-button
                                            (ic/action-account-balance-wallet)])}]
         [:div.board
-         ;(map my-column @(f/subscribe [:board/columns]))
+         ;(map-indexed my-column @(f/subscribe [:board/columns]))
          (for [c @columns]
-           [my-column c])
+           [my-column c (range)])
          [my-new-column]]]])))

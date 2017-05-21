@@ -18,7 +18,7 @@
 .column, .new-column {
     width: 300px;
     float: left;
-    padding: 0.2em;
+    padding: 0.1em;
     border-radius: 0.2em;
     background-color:  #ddd;
     margin: 0.5em;
