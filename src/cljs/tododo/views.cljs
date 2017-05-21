@@ -53,11 +53,13 @@
 (defn my-card [card idx-column idx-card]
   (fn [{:keys [title editing id]} idx-column idx-card]
     (if editing
-      [ui/card {:key id}
+      ^{:key id}
+      [ui/card
         [ui/text-field {:value title
                         :underline-style {:display "none"}
                         :input-style {:color "#ccc"}}]]
-      [ui/card {:key id}
+      ^{:key id}
+      [ui/card
        [ui/card-text title]])))
 
 (defn my-new-column []
@@ -69,9 +71,11 @@
 
 (defn my-column [column idx-column]
   (fn [{:keys [title cards editing id]} idx-column]
-    [:div.column {:key id}
+    ^{:key idx-column}
+    [:div.column
      (if editing
        [ui/card
+        ^{:key id}
         [ui/text-field {:value title
                         :style {:padding-top 5
                                 :font-size 20}
@@ -84,7 +88,7 @@
 (defn main-panel []
   (let [name (f/subscribe [:name])
         title (f/subscribe [:title])
-        columns @(f/subscribe [:board/columns])]
+        columns (f/subscribe [:board/columns])]
     (fn []
       [ui/mui-theme-provider {:mui-theme (get-mui-theme {:palette {:text-color (color :green600)}})}
        [:div
@@ -93,5 +97,9 @@
                             (r/as-element [ui/icon-button
                                            (ic/action-account-balance-wallet)])}]
         [:div.board
-         (map-indexed (fn [idx-column column] [my-column column idx-column]) columns)
+         (js/console.log "COLUMNS" @columns)
+         (map-indexed (fn [idx-column c] ^{:key idx-column} [my-column c idx-column])
+                      @columns)
+         ;(for [c columns]
+         ;  [my-column c 1])
          [my-new-column]]]])))

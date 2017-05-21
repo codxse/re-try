@@ -22,10 +22,12 @@
   :board/add-column!
   (fn [db _]
     (let [dbb @(f/subscribe [:db])
-          columns @(f/subscribe [:board/columns])]
-      (conj columns {:id (random-uuid)
-                     :title "Edit Me"
-                     :editing true}))))
+          columns @(f/subscribe [:board/columns])
+          new-column {:title "EDIT COLUMN"
+                      :id (random-uuid)
+                      :editing true}
+          new-columns (conj columns new-column)]
+      (assoc dbb :columns new-columns))))
 
 (f/reg-event-db
   :column/add-new-card!

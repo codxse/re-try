@@ -22,7 +22,7 @@
 
 (f/reg-sub
   :board/columns
-  (fn [db _] (:columns db)))
+  (fn [db] (:columns db)))
 
 (f/reg-sub
   :db
