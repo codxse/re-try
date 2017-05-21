@@ -59,13 +59,16 @@
       (if editing
         ^{:key id}
         [ui/card
-          [ui/text-field {:default-value title
+          [ui/text-field {:class-name "CSFX"
+                          :default-value title
                           :underline-style {:display "none"}
                           :input-style {:color "#ccc"}
                           :on-change #(do
                                         (reset! default-value (.. % -target -value))
                                         (f/dispatch [:card/update-title! idx-column idx-card @default-value]))
-                          :on-blur #(f/dispatch [:card/set-editing! idx-column idx-card false])}]]
+                          :on-blur #(f/dispatch [:card/set-editing! idx-column idx-card false])
+                          :on-key-press #(when (= (.-charCode %) 13)
+                                           (f/dispatch [:card/set-editing! idx-column idx-card false]))}]]
         ^{:key id}
         [ui/card
          [ui/card-text title]]))))
@@ -85,7 +88,8 @@
        (if editing
          [ui/card
           ^{:key id}
-          [ui/text-field {:default-value title
+          [ui/text-field {:class-name "CSFE"
+                          :default-value title
                           :style {:padding-top 5
                                   :font-size 20}
                           :underline-style {:display "none"}
@@ -93,8 +97,8 @@
                                         (reset! default-value (.. % -target -value))
                                         ;(println "DEF" @default-value))}]]
                                         (f/dispatch [:column/update-title! idx-column @default-value]))
-                          :on-blur #(f/dispatch [:column/set-editing! idx-column false])
-                          :on-key-press #(when (= (.charCode %) 13)
+                          ;:on-blur #(f/dispatch [:column/set-editing! idx-column false])
+                          :on-key-press #(when (= (.-charCode %) 13) ;; 13 is code for enter
                                            (f/dispatch [:column/set-editing! idx-column false]))}]]
          [ui/card {:style {:background-color "#ddd"}}
           [ui/card-title {:title title}]])

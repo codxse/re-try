@@ -31,3 +31,20 @@
     border-radius: 0.2em;
     margin: 0.5em;
 }
+
+.CSFE {
+    padding: 22px 0 22px 18px;
+}
+
+.CSFE input {
+    color: #888 !important;
+    border-bottom: 1px #888 dashed !important;
+}
+
+.CSFX {
+    padding: 0 15px;
+}
+
+.CSFX input {
+    color: #888 !important;
+}
