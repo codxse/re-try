@@ -44,11 +44,14 @@
       (repeat 5 [ui/grid-tile {:title "Some title"}
                  [:img {:src "http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg"}]])]]))
 
-(defn my-new-card [idx]
-  (fn [idx]
+(defn my-new-card [idx-column]
+  "idx-column as identity of current column.
+  Use it for adding new card."
+  (fn [idx-column]
+    ;(s/console.log "IDX COLUMN" idx-column)
     [ui/card
      [ui/card-title {:title "+ Add new card!"
-                     :on-click #(f/dispatch-sync [:test-click])}]]))
+                     :on-click #(f/dispatch-sync [:column/add-new-card! idx-column])}]]))
 
 (defn my-card [card idx-column idx-card]
   (fn [{:keys [title editing id]} idx-column idx-card]
