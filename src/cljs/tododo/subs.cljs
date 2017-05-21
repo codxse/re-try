@@ -27,3 +27,7 @@
 (f/reg-sub
   :db
   (fn [db _] db))
+
+(f/reg-sub
+  :field/default-value
+  (fn [db _] (:default-value db)))

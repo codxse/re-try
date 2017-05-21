@@ -58,7 +58,7 @@
     (if editing
       ^{:key id}
       [ui/card
-        [ui/text-field {:value title
+        [ui/text-field {:default-value title
                         :underline-style {:display "none"}
                         :input-style {:color "#ccc"}}]]
       ^{:key id}
@@ -73,20 +73,26 @@
                       :on-click #(f/dispatch-sync [:board/add-column!])}]]]))
 
 (defn my-column [column idx-column]
-  (fn [{:keys [title cards editing id]} idx-column]
-    ^{:key idx-column}
-    [:div.column
-     (if editing
-       [ui/card
-        ^{:key id}
-        [ui/text-field {:value title
-                        :style {:padding-top 5
-                                :font-size 20}
-                        :underline-style {:display "none"}}]]
-       [ui/card {:style {:background-color "#ddd"}}
-        [ui/card-title {:title title}]])
-     (map-indexed (fn [idx-card card] [my-card card idx-column idx-card]) cards)
-     [my-new-card idx-column]]))
+  (let [default-value (atom "")]
+    (fn [{:keys [title cards editing id]} idx-column]
+      ^{:key idx-column}
+      [:div.column
+       (if editing
+         [ui/card
+          ^{:key id}
+          [ui/text-field {:default-value title
+                          :style {:padding-top 5
+                                  :font-size 20}
+                          :underline-style {:display "none"}
+                          :on-change #(do
+                                        (reset! default-value (.. % -target -value))
+                                        ;(println "DEF" @default-value))}]]
+                                        (f/dispatch [:column/update-title! idx-column @default-value]))
+                          :on-blur #(f/dispatch [:column/set-editing! idx-column false])}]]
+         [ui/card {:style {:background-color "#ddd"}}
+          [ui/card-title {:title title}]])
+       (map-indexed (fn [idx-card card] [my-card card idx-column idx-card]) cards)
+       [my-new-card idx-column]])))
 
 (defn main-panel []
   (let [name (f/subscribe [:name])

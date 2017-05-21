@@ -22,4 +22,5 @@
                       {:id (random-uuid)
                        :title "Go to school"
                        :editing false}]
-              :editing false}]})
+              :editing false}]
+   :default-value ""})

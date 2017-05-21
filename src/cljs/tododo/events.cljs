@@ -40,3 +40,21 @@
                                            :editing true})
           updated-column-with-new-card (assoc column :cards card-list)]
      (update-in @dbb [:columns column-index] (fn [] updated-column-with-new-card)))))
+
+(f/reg-event-db
+  :column/update-title!
+  (fn [db [_ idx-column value]]
+    (let [dbb (f/subscribe [:db])
+          this-column (get-in @dbb [:columns idx-column])
+          updated-column (update this-column :title (fn [] value))]
+      (update-in @dbb [:columns idx-column] (fn [] updated-column)))))
+
+(f/reg-event-db
+  :column/set-editing!
+  (fn [db [_ idx-column value]]
+    (let [dbb (f/subscribe [:db])
+          this-column (get-in @dbb [:columns idx-column])
+          updated-column (update this-column :editing (fn [] false))]
+      (println "THIS COLUMN" this-column)
+      (update-in @dbb [:columns idx-column] (fn [] updated-column)))))
+
