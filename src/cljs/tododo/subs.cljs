@@ -19,3 +19,7 @@
 (f/reg-sub
   :expanded
   (fn [db] (:expanded db)))
+
+(f/reg-sub
+  :board/columns
+  (fn [db] (:columns db)))
