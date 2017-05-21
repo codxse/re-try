@@ -54,7 +54,23 @@
   (fn [db [_ idx-column value]]
     (let [dbb (f/subscribe [:db])
           this-column (get-in @dbb [:columns idx-column])
-          updated-column (update this-column :editing (fn [] false))]
+          updated-column (update this-column :editing (fn [] value))]
       (println "THIS COLUMN" this-column)
       (update-in @dbb [:columns idx-column] (fn [] updated-column)))))
+
+(f/reg-event-db
+  :card/update-title!
+  (fn [db [_ idx-column idx-card value]]
+    (let [dbb (f/subscribe [:db])]
+          ;new-db (update-in @dbb [:columns idx-column :cards idx-card] :title (fn [] value))
+          ;edit (get-in @dbb [:columns idx-column :cards idx-card])]
+      ;(println "THIS CARD" edit)
+      (update-in @dbb [:columns idx-column :cards idx-card :title] (fn [] value)))))
+
+(f/reg-event-db
+  :card/set-editing!
+  (fn [db [_ idx-column idx-card value]]
+    (let [dbb (f/subscribe [:db])]
+      (update-in @dbb [:columns idx-column :cards idx-card :editing] (fn [] value)))))
+
 

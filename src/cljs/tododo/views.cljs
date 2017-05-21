@@ -54,16 +54,21 @@
                      :on-click #(f/dispatch-sync [:column/add-new-card! idx-column])}]]))
 
 (defn my-card [card idx-column idx-card]
-  (fn [{:keys [title editing id]} idx-column idx-card]
-    (if editing
-      ^{:key id}
-      [ui/card
-        [ui/text-field {:default-value title
-                        :underline-style {:display "none"}
-                        :input-style {:color "#ccc"}}]]
-      ^{:key id}
-      [ui/card
-       [ui/card-text title]])))
+  (let [default-value (atom {})]
+    (fn [{:keys [title editing id]} idx-column idx-card]
+      (if editing
+        ^{:key id}
+        [ui/card
+          [ui/text-field {:default-value title
+                          :underline-style {:display "none"}
+                          :input-style {:color "#ccc"}
+                          :on-change #(do
+                                        (reset! default-value (.. % -target -value))
+                                        (f/dispatch [:card/update-title! idx-column idx-card @default-value]))
+                          :on-blur #(f/dispatch [:card/set-editing! idx-column idx-card false])}]]
+        ^{:key id}
+        [ui/card
+         [ui/card-text title]]))))
 
 (defn my-new-column []
   (fn []
@@ -88,7 +93,9 @@
                                         (reset! default-value (.. % -target -value))
                                         ;(println "DEF" @default-value))}]]
                                         (f/dispatch [:column/update-title! idx-column @default-value]))
-                          :on-blur #(f/dispatch [:column/set-editing! idx-column false])}]]
+                          :on-blur #(f/dispatch [:column/set-editing! idx-column false])
+                          :on-key-press #(when (= (.charCode %) 13)
+                                           (f/dispatch [:column/set-editing! idx-column false]))}]]
          [ui/card {:style {:background-color "#ddd"}}
           [ui/card-title {:title title}]])
        (map-indexed (fn [idx-card card] [my-card card idx-column idx-card]) cards)
